@@ -407,7 +407,7 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
     return self.ready;
 }
 
-- (void)requestResolution:(CGRect)bounds {
+- (void)requestResolution:(CGRect)bounds physicalSize:(CGSize)physicalSize {
     if (!_main) {
         UTMLog(@"ignoring change resolution because main channel not found");
         return;
@@ -420,6 +420,11 @@ static void cs_channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer 
                                       bounds.size.width,
                                       bounds.size.height,
                                       TRUE);
+    spice_main_channel_update_display_mm(_main,
+                                         (int)self.monitorID,
+                                         physicalSize.width,
+                                         physicalSize.height,
+                                         TRUE);
     spice_main_channel_send_monitor_config(_main);
 }
 

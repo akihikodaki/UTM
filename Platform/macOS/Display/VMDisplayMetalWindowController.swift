@@ -164,6 +164,9 @@ extension VMDisplayMetalWindowController {
         logger.debug("screen changed")
         if let vmDisplay = self.vmDisplay {
             displaySizeDidChange(size: vmDisplay.displaySize)
+            if let window = self.window {
+                _ = updateGuestResolution(for: window, frameSize: window.frame.size)
+            }
         }
     }
     
@@ -186,13 +189,16 @@ extension VMDisplayMetalWindowController {
     
     fileprivate func updateGuestResolution(for window: NSWindow, frameSize: NSSize) -> NSSize {
         guard let vmDisplay = self.vmDisplay else { return frameSize }
+        guard let screen = window.screen else { return frameSize }
+        let currentScreenScale = screen.backingScaleFactor
         let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
         let nativeScale = isAlwaysNativeResolution ? currentScreenScale : 1.0
         let targetSize = window.contentRect(forFrameRect: CGRect(origin: .zero, size: frameSize)).size
         let targetSizeScaled = isAlwaysNativeResolution ? targetSize.applying(CGAffineTransform(scaleX: nativeScale, y: nativeScale)) : targetSize
         logger.debug("Requesting resolution: (\(targetSizeScaled.width), \(targetSizeScaled.height))")
         let bounds = CGRect(origin: .zero, size: targetSizeScaled)
-        vmDisplay.requestResolution(bounds)
+        let display = screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as! NSNumber
+        vmDisplay.requestResolution(bounds, physicalSize:CGDisplayScreenSize(display.uint32Value))
         return frameSize
     }
 

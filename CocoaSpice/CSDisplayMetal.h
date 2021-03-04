@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (id)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID monitorID:(NSInteger)monitorID;
 - (id)initWithSession:(nonnull SpiceSession *)session channelID:(NSInteger)channelID;
 - (void)updateVisibleAreaWithRect:(CGRect)rect;
-- (void)requestResolution:(CGRect)bounds;
+- (void)requestResolution:(CGRect)bounds physicalSize:(CGSize)physicalSize;
 
 @end
 
